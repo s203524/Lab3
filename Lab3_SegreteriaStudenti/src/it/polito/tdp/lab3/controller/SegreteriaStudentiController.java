@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 
 public class SegreteriaStudentiController {
 	
@@ -51,25 +52,40 @@ public class SegreteriaStudentiController {
     private Button btnCerca;
 
     @FXML
-    private TextField txtOutput;
+    private TextArea txtOutput;
 
     @FXML
     private Button btnReset;
 
     @FXML
     void doCerca(ActionEvent event) {
-    	String codIns = cmbCorsi.getValue().getCodIns();
     	String stampa = "";
-    	for(Studente s: model.iscrittiCorso(codIns)){
-    		if(s!=null){
-    			stampa += s.toString();
+    	if(txtMatricola.getText().compareTo("")!=0 && cmbCorsi.getValue().getCrediti()==-1){
+    		if(model.cercaStudente(txtMatricola.getText())!=null){
+    			for(Corso c: model.corsiStudente(txtMatricola.getText())){
+    				stampa += c.getCodIns() + " " + c.getCrediti() + " " + c.getNome() + " " + c.getPd() + "\n";
+    			}
+    			txtOutput.setText(stampa);
+    			return;
     		}
     		else{
-    			txtOutput.setText("Nessuno studente iscritto al corso" + codIns);
+    			txtOutput.setText("Matricola non trovata");
     			return;
     		}
     	}
-    	txtOutput.setText(stampa);
+    	else{
+    	  	String codIns = cmbCorsi.getValue().getCodIns();
+        	for(Studente s: model.iscrittiCorso(codIns)){
+        		if(s!=null){
+        			stampa += s.toString();
+        		}
+        		else{
+        			txtOutput.setText("Nessuno studente iscritto al corso" + codIns);
+        			return;
+        		}
+        	}
+        	txtOutput.setText(stampa);
+    	}
     }
 
     @FXML
