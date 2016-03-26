@@ -73,6 +73,19 @@ public class SegreteriaStudentiController {
     			return;
     		}
     	}
+    	if(txtMatricola.getText().compareTo("")!=0 && cmbCorsi.getValue().getCrediti()!=-1){
+    		if(model.cercaStudente(txtMatricola.getText())==null){
+    			stampa = "Matricola non trovata";
+   			}
+   			else{
+   				if(model.StudenteIscrittoCorso(cmbCorsi.getValue().getCodIns(), txtMatricola.getText())==true)
+   					stampa = "Lo studente è iscritto al corso";
+   				else
+    				stampa = "Lo studente non è iscritto al corso";
+    		}
+    		txtOutput.setText(stampa);
+			return;
+    	}
     	else{
     	  	String codIns = cmbCorsi.getValue().getCodIns();
         	for(Studente s: model.iscrittiCorso(codIns)){
@@ -90,7 +103,23 @@ public class SegreteriaStudentiController {
 
     @FXML
     void doIscrivi(ActionEvent event) {
-
+    	String stampa = "";
+    	Studente tempS = model.cercaStudente(txtMatricola.getText());
+    	if(tempS==null)
+    		stampa = "Matricola inesistente";
+    	else{
+    		if(model.StudenteIscrittoCorso(cmbCorsi.getValue().getCodIns(), txtMatricola.getText())==false){
+    			model.iscriviStudente(txtMatricola.getText(), cmbCorsi.getValue().getCodIns());
+    			stampa = tempS.getNome() + " " + tempS.getCognome() + " (" + 
+    					 tempS.getMatricola() + ") " + "è stato iscritto al corso di " +
+    					 "'" + cmbCorsi.getValue().getNome() + "'";
+    		}
+    		else
+    			stampa = "Studente già iscritto al corso"; 
+    			
+    	}
+    	txtOutput.setText(stampa);
+    	return;
     }
 
     @FXML
@@ -100,6 +129,7 @@ public class SegreteriaStudentiController {
     	txtCognome.setText("");
     	txtOutput.clear();
     	btnSpunta.setDisable(false);
+    	cmbCorsi.setValue(null);
     }
 
     @FXML
